@@ -1,0 +1,31 @@
+# kafka-deployment yaml file
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-app
+  template:
+    metadata:
+      labels:
+        app: kafka-app
+    spec:
+      containers:
+        - name: kafka-kubernetes-container
+          image: bitnami/kafka:3.6
+          ports:
+            - containerPort: 9092
+
+          volumeMounts:
+             - name: kafka-data-volume
+               mountPath: /bitnami/kafka/data
+          envFrom:
+            - configMapRef:
+                name: kafka-configmap
+      volumes:
+        - name: kafka-data-volume
+          persistentVolumeClaim:
+            claimName: baobao-local-pvc

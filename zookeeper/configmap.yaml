@@ -1,0 +1,11 @@
+# zookeeper-configMap yaml file
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zookeeper-configmap
+data:
+  ALLOW_ANONYMOUS_LOGIN: "yes"
+  zoo.cfg: |
+    tickTime=2000
+    dataDir=/data
+    clientPort=2181
