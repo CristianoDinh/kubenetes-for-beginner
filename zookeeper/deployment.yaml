@@ -1,0 +1,55 @@
+# zookeeper-deployment yaml file
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper-app
+  template:
+    metadata:
+      labels:
+        app: zookeeper-app
+    spec:
+      containers:
+        - name: zookeeper-kubernetes-container
+          image: zookeeper:3.8
+          ports:
+            - containerPort: 2181
+
+          livenessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          readinessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 3
+            periodSeconds: 5
+
+          envFrom:
+            - configMapRef:
+                name: zookeeper-configmap
+          volumeMounts:
+            - name: config-volume
+              mountPath: /conf
+            - name: secret-volume
+              mountPath: /conf
+
+            - name: zookeeper-data-volume
+              mountPath: /data
+      volumes:
+        - name: config-volume
+          configMap:
+            name: zookeeper-configmap
+        - name: secret-volume
+          secret:
+            secretName: zookeeper-secret
+
+        - name: zookeeper-data-volume
+          persistentVolumeClaim:
+            claimName: baobao-local-pvc
